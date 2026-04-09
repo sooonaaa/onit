@@ -19,7 +19,7 @@ def setup_database():
 def test_read_main():
     response = client.get("/")
     assert response.status_code == 200
-    assert "CRUD App" in response.text
+    assert "Список задач" in response.text
 
 def test_api_status():
     response = client.get("/api/status")

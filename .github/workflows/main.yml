@@ -1,20 +1,16 @@
-name: CI/CD Pipeline
+name: CI/CD Pipeline Lab3
 
-on:
-  push:
-    branches: [ "main", "master" ]
-  pull_request:
-    branches: [ "main", "master" ]
+on: [push]
 
 jobs:
-  test:
+  test_and_build:
     runs-on: ubuntu-latest
     
-    # Поднимаем базу данных прямо в GitHub Actions для тестов
     services:
       db:
         image: postgres:15
         env:
+          # GitHub Actions требует эти переменные для запуска контейнера
           POSTGRES_USER: ${{ secrets.DB_USER }}
           POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
           POSTGRES_DB: ${{ secrets.DB_NAME }}
@@ -27,8 +23,7 @@ jobs:
           --health-retries 5
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -37,26 +32,16 @@ jobs:
 
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
           pip install -r requirements.txt
-          pip install pytest httpx  # Инструменты для тестов
 
-      - name: Run functional tests
+      - name: Run Tests
         env:
+          # Передаем те же секреты в само приложение FastAPI
           DB_USER: ${{ secrets.DB_USER }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           DB_NAME: ${{ secrets.DB_NAME }}
           DB_HOST: localhost
-        run: |
-          pytest test_main.py
+        run: pytest test_main.py
 
-  build:
-    needs: test # Сборка начнется только если тесты прошли успешно
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Build Docker images
-        run: |
-          docker-compose build
+      - name: Docker Build Check
+        run: docker-compose build

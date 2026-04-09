@@ -56,7 +56,7 @@ async def index():
     <html>
         <body style="font-family: sans-serif; padding: 40px; background: #f4f4f4;">
             <div style="max-width: 500px; margin: auto; background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                <h2 style="color: #333;">CRUD App ({APP_NAME})</h2>
+                <h2 style="color: #333;">Список задач</h2>
                 <form action="/add" method="post" style="display: flex; gap: 10px;">
                     <input name="title" placeholder="Текст задачи..." required style="flex-grow: 1; padding: 8px;">
                     <button type="submit" style="cursor: pointer; background: #28a745; color: white; border: none; padding: 8px 15px; border-radius: 4px;">+</button>

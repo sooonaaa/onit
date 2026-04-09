@@ -44,4 +44,4 @@ jobs:
         run: pytest test_main.py
 
       - name: Docker Build Check
-        run: docker-compose build
+        run: docker compose build

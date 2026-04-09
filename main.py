@@ -18,7 +18,7 @@ async def lifespan(app: FastAPI):
     try:
         conn = get_db_conn()
         cur = conn.cursor()
-        cur.execute("CREATE TABLE IF NOT EXISTS tasks (id SERIAL PRIMARY KEY, title TEXT);")
+        cur.execute("CREATE TABLE IF NOT EXISTS tasks (id SERIAL PRIMARY KEY, title TEXT, is_done BOOLEAN DEFAULT FALSE);")
         conn.commit()
         cur.close()
         conn.close()
@@ -43,9 +43,18 @@ async def index():
     
     tasks_li = ""
     for r in rows:
+        # r[0] - id, r[1] - title, r[2] - is_done
+        is_done = r[2] 
+        checked = "checked" if is_done else ""
+    # Добавим стиль зачеркивания для выполненных задач
+        text_style = "text-decoration: line-through; color: #888;" if is_done else "color: #333;"
+    
         tasks_li += f"""
         <li style="margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding: 5px 0;">
-            <span>{r[1]}</span>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <input type="checkbox" {checked} onchange="window.location.href='/toggle/{r[0]}'" style="cursor: pointer; width: 18px; height: 18px;">
+                <span style="{text_style}">{r[1]}</span>
+            </div>
             <div>
                 <a href='/edit_form/{r[0]}' style='color:orange; text-decoration:none; margin-right:10px;'>[Изменить]</a>
                 <a href='/del/{r[0]}' style='color:red; text-decoration:none;'>[Удалить]</a>
@@ -118,6 +127,16 @@ async def delete(idx: int):
     conn = get_db_conn()
     cur = conn.cursor()
     cur.execute("DELETE FROM tasks WHERE id = %s", (idx,))
+    conn.commit()
+    cur.close()
+    conn.close()
+    return HTMLResponse("<script>location.href='/'</script>")
+@app.get("/toggle/{idx}")
+async def toggle_task(idx: int):
+    conn = get_db_conn()
+    cur = conn.cursor()
+    # SQL магия: меняем значение на противоположное (True -> False, False -> True)
+    cur.execute("UPDATE tasks SET is_done = NOT is_done WHERE id = %s", (idx,))
     conn.commit()
     cur.close()
     conn.close()

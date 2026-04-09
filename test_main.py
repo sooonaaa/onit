@@ -6,8 +6,8 @@ from main import app, get_db_conn
 
 client = TestClient(app)
 
-# Этот блок выполнится перед тестами и создаст таблицу
-@pytest.fixture(scope="session", autowirt=True)
+# Исправлено: autouse=True (автоматический запуск)
+@pytest.fixture(scope="session", autouse=True)
 def setup_database():
     conn = get_db_conn()
     cur = conn.cursor()

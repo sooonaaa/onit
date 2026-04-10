@@ -57,7 +57,7 @@ async def index():
             </div>
             <div>
                 <a href='/edit_form/{r[0]}' style='color:orange; text-decoration:none; margin-right:10px;'>[Изменить]</a>
-                <a href='/del/{r[0]}' style='color:red; text-decoration:none;'>[Удалить]</a>
+                <a href='/del/{r[0]}' style='color:red; text-decoration:none;'>[Удалитьььь]</a>
             </div>
         </li>"""
     
